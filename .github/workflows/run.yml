@@ -1,4 +1,4 @@
-name: Keep Servers Alive
+name: 保活serv00
 
 on:
   schedule:
