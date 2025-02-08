@@ -18,7 +18,7 @@ jobs:
     # 注意[]"",:这些符号不要乱删，按规律对齐
     # 每行一个{serv00服务器}，一个服务也可，末尾用,间隔，最后一个服务器末尾无需用,间隔
       ACCOUNTS: ${{ secrets.ACCOUNTS }}  # 假设ACCOUNTS是从GitHub Secrets中读取的
-      ISRES: '["y", "y"]'  # 直接在代码中定义isres数组，用于管理每个是否重置RES，需匹配ACCOUNTS的数量。
+      ISRES: '["n", "n"]'  # 直接在代码中定义isres数组，用于管理每个是否重置RES，需匹配ACCOUNTS的数量。
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
