@@ -1,4 +1,4 @@
-name: 保活serv00
+name: Keep Servers Alive
 
 on:
   schedule:
@@ -9,16 +9,8 @@ jobs:
   keep_servers_alive:
     runs-on: ubuntu-latest
     env:
-    # serv00变量添加规则：
-    # 推荐:为确保节点可用性，建议在Serv00网页不设置端口，脚本会随机生成有效端口，首次运行会中断SSH，请把RES设置为n再执行即可
-    # RES(必填)：n表示每次不重置部署，y表示每次重置部署。
-    # 其他信息在secrets中。
-    # SSH_USER(必填)表示serv00账号名。SSH_PASS(必填)表示serv00密码。REALITY表示reality域名(留空表示serv00官方域名：你serv00账号名.serv00.net)。SUUID表示uuid(留空表示随机uuid)。TCP1_PORT表示vless的tcp端口(留空表示随机tcp端口)。TCP2_PORT表示vmess的tcp端口(留空表示随机tcp端口)。UDP_PORT表示hy2的udp端口(留空表示随机udp端口)。HOST(必填)表示登录serv00服务器域名。ARGO_DOMAIN表示argo固定域名(留空表示临时域名)。ARGO_AUTH表示argo固定域名token(留空表示临时域名)。
-    # 必填变量：RES、SSH_USER、SSH_PASS、HOST
-    # 注意[]"",:这些符号不要乱删，按规律对齐
-    # 每行一个{serv00服务器}，一个服务也可，末尾用,间隔，最后一个服务器末尾无需用,间隔
       ACCOUNTS: ${{ secrets.ACCOUNTS }}  # 假设ACCOUNTS是从GitHub Secrets中读取的
-      ISRES: '["n", "y"]'  # 直接在代码中定义isres数组，用于管理每个是否重置RES，需匹配ACCOUNTS的数量。
+      isres: '["n", "y"]'  # 直接在代码中定义isres数组
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
@@ -32,6 +24,43 @@ jobs:
         run: |
           count=0  
           ISRES=($(echo "$isres" | jq -r '.[]'))
+          
+          # 定义run_remote_command函数
+          run_remote_command() {
+            local RES=$1
+            local SSH_USER=$2
+            local SSH_PASS=$3
+            local REALITY=${4}
+            local SUUID=$5
+            local TCP1_PORT=$6
+            local TCP2_PORT=$7
+            local UDP_PORT=$8
+            local HOST=$9
+            local ARGO_DOMAIN=${10}
+            local ARGO_AUTH=${11}
+
+            if [ -z "${ARGO_DOMAIN}" ]; then
+              echo "Argo域名为空，申请Argo临时域名"
+            else
+              echo "Argo已设置固定域名：${ARGO_DOMAIN}"
+            fi
+
+            remote_command="export reym=$REALITY UUID=$SUUID vless_port=$TCP1_PORT vmess_port=$TCP2_PORT hy2_port=$UDP_port reset=$RES ARGO_DOMAIN=${ARGO_DOMAIN} ARGO_AUTH=${ARGO_AUTH} && bash <(curl -Ls https://raw.githubusercontent.com/yonggekkk/sing-box-yg/main/serv00keep.sh)"
+            echo "Executing remote command on $HOST as $SSH_USER with command: $remote_command"
+            sshpass -p "$SSH_PASS" ssh -o StrictHostKeyChecking=no "$SSH_USER@$HOST" "$remote_command"
+          }
+
+          # 版权声明
+          echo "*****************************************************"
+          echo "*****************************************************"
+          echo "甬哥Github项目  ：github.com/yonggekkk"
+          echo "甬哥Blogger博客 ：ygkkk.blogspot.com"
+          echo "甬哥YouTube频道 ：www.youtube.com/@ygkkk"
+          echo "自动远程部署并保活Serv00三合一协议脚本【Github】"
+          echo "版本：V25.1.22"
+          echo "*****************************************************"
+          echo "*****************************************************"
+
           for account in $(echo "${ACCOUNTS}" | jq -c '.[]'); do
             count=$((count+1))
             RES=${ISRES[$((count-1))]}  # 根据索引从isres数组中获取RES值
