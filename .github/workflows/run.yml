@@ -26,7 +26,7 @@ jobs:
         run: |
           count=0  
           ISRES=($(echo "$isres" | jq -r '.[]'))
-          ISHOW="$isshow"  # 将isshow赋值给IShow变量，以便后续使用
+          ISSHOW="$isshow"  # 将isshow赋值给ISSHOW变量，以便后续使用
 
           # 定义run_remote_command函数
           run_remote_command() {
@@ -92,7 +92,7 @@ jobs:
                   echo "⚠️提示Error: Process completed with exit code 255中断并退出时，说明设置随机端口完成，请把RES设置为n再执行即可"
                   output=$(run_remote_command "$RES" "$SSH_USER" "$SSH_PASS" "${REALITY}" "$SUUID" "$TCP1_PORT" "$TCP2_PORT" "$UDP_PORT" "$HOST" "${ARGO_DOMAIN}" "${ARGO_AUTH}")
                   
-                  if [[ "$IShow" == "y" || "$IShow" == "Y" ]]; then
+                  if [[ "$ISSHOW" == "y" || "$ISSHOW" == "Y" ]]; then
                       echo "远程命令执行结果：$output"
                   else
                       echo "执行完成。"
@@ -100,7 +100,7 @@ jobs:
               else
                   echo "🎉恭喜！✅检测到所有进程正常运行中 "
                   echo "配置显示如下："
-                  if [[ "$IShow" == "y" || "$IShow" == "Y" ]]; then
+                  if [[ "$ISSHOW" == "y" || "$ISSHOW" == "Y" ]]; then
                       sshpass -p "$SSH_PASS" ssh -o StrictHostKeyChecking=no "$SSH_USER@$HOST" \
                          "cat domains/\$(whoami).serv00.net/logs/list.txt; \
                           echo '===================================================='"
