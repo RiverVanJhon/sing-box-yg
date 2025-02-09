@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       ACCOUNTS: ${{ secrets.ACCOUNTS }}  # 假设ACCOUNTS是从GitHub Secrets中读取的
-      isres: '["y", "n"]'  # 直接在代码中定义isres数组
+      isres: '["n", "n"]'  # 直接在代码中定义isres数组
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
