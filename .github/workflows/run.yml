@@ -45,10 +45,12 @@ jobs:
             if [ -z "${ARGO_DOMAIN}" ]; then
               echo "Argo域名为空，申请Argo临时域名"
             else
+              #敏感信息
               echo "Argo已设置固定域名：${ARGO_DOMAIN}"
             fi
 
             remote_command="export reym=$REALITY UUID=$SUUID vless_port=$TCP1_PORT vmess_port=$TCP2_PORT hy2_port=$UDP_port reset=$RES ARGO_DOMAIN=${ARGO_DOMAIN} ARGO_AUTH=${ARGO_AUTH} && bash <(curl -Ls https://raw.githubusercontent.com/yonggekkk/sing-box-yg/main/serv00keep.sh)"
+            #敏感信息
             echo "Executing remote command on $HOST as $SSH_USER with command: $remote_command"
             sshpass -p "$SSH_PASS" ssh -o StrictHostKeyChecking=no "$SSH_USER@$HOST" "$remote_command"
           }
@@ -78,7 +80,7 @@ jobs:
             ARGO_DOMAIN=$(echo $account | jq -r '.ARGO_DOMAIN')
             ARGO_AUTH=$(echo $account | jq -r '.ARGO_AUTH') 
             if sshpass -p "$SSH_PASS" ssh -o StrictHostKeyChecking=no "$SSH_USER@$HOST" -q exit; then
-              echo "🎉恭喜！✅第【$count】台服务器连接成功！🚀服务器地址：$HOST ，账户名：$SSH_USER"   
+              echo "🎉恭喜！✅第【$count】台服务器连接成功！🚀"   
               if [ -z "${ARGO_DOMAIN}" ]; then
                 check_process="ps aux | grep '[c]onfig' > /dev/null && ps aux | grep [l]ocalhost:$TCP2_PORT > /dev/null"
               else
@@ -110,7 +112,7 @@ jobs:
               fi
             else
               echo "===================================================="
-              echo "💥杯具！❌第【$count】台服务器连接失败！🚀服务器地址：$HOST ，账户名：$SSH_USER"
+              echo "💥杯具！❌第【$count】台服务器连接失败！"
               echo "⚠️可能账号名、密码、服务器名称输入错误，或者当前服务器在维护中"  
               echo "===================================================="
             fi
