@@ -11,6 +11,8 @@ jobs:
     env:
       ACCOUNTS: ${{ secrets.ACCOUNTS }}  # 假设ACCOUNTS是从GitHub Secrets中读取的
       isres: '["n", "n"]'  # 直接在代码中定义isres数组
+      isshow: 'y'  # 添加isshow，并设置初始值为'y'
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
@@ -24,7 +26,8 @@ jobs:
         run: |
           count=0  
           ISRES=($(echo "$isres" | jq -r '.[]'))
-          
+          ISHOW="$isshow"  # 将isshow赋值给IShow变量，以便后续使用
+
           # 定义run_remote_command函数
           run_remote_command() {
             local RES=$1
@@ -81,18 +84,29 @@ jobs:
               else
                 check_process="ps aux | grep '[c]onfig' > /dev/null && ps aux | grep '[t]oken $ARGO_AUTH' > /dev/null"
               fi
+
+              
               if ! sshpass -p "$SSH_PASS" ssh -o StrictHostKeyChecking=no "$SSH_USER@$HOST" "$check_process" || [[ "$RES" =~ ^[Yy]$ ]]; then
-                echo "⚠️检测到主进程或者argo进程未启动，或者执行重置"
-                echo "⚠️现在开始修复或重置部署……请稍等"
-                echo "⚠️提示Error: Process completed with exit code 255中断并退出时，说明设置随机端口完成，请把RES设置为n再执行即可"
-                output=$(run_remote_command "$RES" "$SSH_USER" "$SSH_PASS" "${REALITY}" "$SUUID" "$TCP1_PORT" "$TCP2_PORT" "$UDP_PORT" "$HOST" "${ARGO_DOMAIN}" "${ARGO_AUTH}")
-                echo "远程命令执行结果：$output"
+                  echo "⚠️检测到主进程或者argo进程未启动，或者执行重置"
+                  echo "⚠️现在开始修复或重置部署……请稍等"
+                  echo "⚠️提示Error: Process completed with exit code 255中断并退出时，说明设置随机端口完成，请把RES设置为n再执行即可"
+                  output=$(run_remote_command "$RES" "$SSH_USER" "$SSH_PASS" "${REALITY}" "$SUUID" "$TCP1_PORT" "$TCP2_PORT" "$UDP_PORT" "$HOST" "${ARGO_DOMAIN}" "${ARGO_AUTH}")
+                  
+                  if [[ "$IShow" == "y" || "$IShow" == "Y" ]]; then
+                      echo "远程命令执行结果：$output"
+                  else
+                      echo "执行完成。"
+                  fi
               else
-                echo "🎉恭喜！✅检测到所有进程正常运行中 "
-                echo "配置显示如下："
-                sshpass -p "$SSH_PASS" ssh -o StrictHostKeyChecking=no "$SSH_USER@$HOST" \
-                   "cat domains/\$(whoami).serv00.net/logs/list.txt; \
-                    echo '===================================================='" 
+                  echo "🎉恭喜！✅检测到所有进程正常运行中 "
+                  echo "配置显示如下："
+                  if [[ "$IShow" == "y" || "$IShow" == "Y" ]]; then
+                      sshpass -p "$SSH_PASS" ssh -o StrictHostKeyChecking=no "$SSH_USER@$HOST" \
+                         "cat domains/\$(whoami).serv00.net/logs/list.txt; \
+                          echo '===================================================='"
+                  else
+                      echo "执行完成。"
+                  fi
               fi
             else
               echo "===================================================="
