@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       ACCOUNTS: ${{ secrets.ACCOUNTS }}  # ACCOUNTS是从GitHub Secrets中读取的
-      isres: '["y", "y"]'  # 是否重置安装，与ACCOUNTS的数量一致
+      isres: '["n", "n"]'  # 是否重置安装，与ACCOUNTS的数量一致
       isshow: 'n'  # 添加isshow，是否打印输出结果
 
     steps:
