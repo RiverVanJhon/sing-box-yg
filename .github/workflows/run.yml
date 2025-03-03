@@ -3,7 +3,7 @@ name: Keep Servers Alive
 on:
   schedule:
    #- cron: '0 */11 * * *' # 定间隔运行，每11小时执行一次
-   - cron: '0 18 * * *' # 定时运行，UTC时间下午6点，即北京时间凌晨2点
+   #- cron: '0 18 * * *' # 定时运行，UTC时间下午6点，即北京时间凌晨2点
   workflow_dispatch: 
   
 jobs:
