@@ -12,7 +12,7 @@ jobs:
     env:
       ACCOUNTS: ${{ secrets.ACCOUNTS }}  # ACCOUNTS是从GitHub Secrets中读取的
       isres: '["n", "n"]'  # 是否重置安装，与ACCOUNTS的数量一致
-      isshow: 'n'  # 添加isshow，是否打印输出结果
+      isshow: 'y'  # 添加isshow，是否打印输出结果
 
     steps:
       - name: Checkout Repository
